@@ -1,0 +1,46 @@
+﻿Program.Sub.Preflight.Start
+Program.Sub.Preflight.End
+
+'ARC 6905
+'Cus: Advanced Heat Treat
+'Customer has a need to review the part as originally quoted for the Sales Order line on the Invoice.  They would like to be able to call this report directly from the invoicing screen based on the active line.
+
+'hook 28710 - Invoice > SO Line > Script 1
+'This script check for related Quote from an SO
+'	Then print the Quote using callwrapper 920000
+'	Display a message if there is no Quote attached to the SO
+
+Program.Sub.Main.Start
+f.Intrinsic.Control.Try
+	v.Local.sSQL.Declare(String)
+	v.Local.sSO.Declare(String)
+	v.Local.sQuote.Declare(String)
+	v.Local.sMessage.Declare(String)
+	
+	f.Intrinsic.Control.If(v.Caller.Hook,=,"28710")
+		f.Intrinsic.UI.InvokeWaitDialog("Printing Quote")
+		v.Local.sSO.Set(v.Passed.009000)
+		f.Intrinsic.String.Build("select top 1 QUOTE from V_ORDER_HEADER where RTRIM(ORDER_NO) ='{0}'", v.Local.sSO.Trim, v.Local.sSQL)
+		f.ODBC.Connection!Con.OpenCompanyConnection
+		f.ODBC.Connection!Con.ExecuteAndReturn(v.Local.sSQL, v.Local.sQuote)
+		f.ODBC.Connection!Con.Close
+		
+		f.Intrinsic.Control.If(v.Ambient.ExecuteAndReturnEOF)
+			f.Intrinsic.String.Build("No Quote Found for This Order#{0}", v.Local.sSO, v.Local.sMessage)
+			f.Intrinsic.UI.Msgbox(v.Local.sMessage, "Quote Not Found")
+			f.Intrinsic.UI.CloseWaitDialog
+		f.Intrinsic.Control.Else
+			f.Global.General.CallWrapperSync("920000", v.Local.sQuote.Trim)
+			f.Intrinsic.UI.CloseWaitDialog
+		f.Intrinsic.Control.EndIf
+	f.Intrinsic.Control.EndIf
+	
+f.Intrinsic.Control.Catch
+	f.Intrinsic.UI.Msgbox(v.Ambient.ErrorDescription)
+f.Intrinsic.Control.EndTry
+Program.Sub.Main.End
+
+Program.Sub.Comments.Start
+${$5$}$3.0.0.0$}$1
+${$6$}$nle$}$20220920122820481$}$kjzCRYkA6UEoRnCwndYnRYciZCm2U5XYfjXev4gJcpezTRyXQ5oiiRpOrZpmMlrC
+Program.Sub.Comments.End
