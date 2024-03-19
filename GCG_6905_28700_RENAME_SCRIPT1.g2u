@@ -1,0 +1,22 @@
+﻿Program.Sub.Preflight.Start
+Program.Sub.Preflight.End
+
+'ARC 6905
+'Cus: Advanced Heat Treat
+
+'Customer has a need to review the part as originally quoted for the Sales Order line on the Invoice.  They would like to be able to call this report directly from the invoicing screen based on the active line.
+
+'hook 28700 - Populate 
+' This script rename the script 1 button to "Print Quote"
+
+Program.Sub.Main.Start
+f.Intrinsic.Control.Try
+v.Passed.000162.Set("Print Quote")
+f.Intrinsic.Control.Catch
+f.Intrinsic.Control.EndTry
+Program.Sub.Main.End
+
+Program.Sub.Comments.Start
+${$5$}$3.0.0.0$}$1
+${$6$}$nle$}$20220920122816152$}$kjzCRYkA6UEoRnCwndYnRYciZCm2U5XYfjXev4gJcpexri4sFRjdcQHy91R0paPT
+Program.Sub.Comments.End
